@@ -20,7 +20,7 @@ export var TodoApp = React.createClass({
           <a href="#" onClick={this.onLogout}>Logout</a>
         </div>
 
-        <h1 className="page-title">Todo App</h1>
+        <h1 className="page-title"></h1>
 
         <div className="row">
           <div className="column small-centered small-11 medium-6 large-5">

@@ -57,6 +57,10 @@ export var authReducer = (state = {}, action) => {
       };
     case 'LOGOUT':
       return {};
+    case 'LOGIN_ERROR':
+      return {
+          error: action.error
+      };
     default:
       return state;
   }

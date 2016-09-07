@@ -50,7 +50,11 @@ export var addTodos = (todos) => {
 };
 
 export var startAddTodos = () => {
+
+    console.log("startAddTodos");
   return (dispatch, getState) => {
+
+
     var uid = getState().auth.uid;
     var todosRef = firebaseRef.child(`users/${uid}/todos`);
 
@@ -69,6 +73,44 @@ export var startAddTodos = () => {
     });
   };
 };
+
+export var startAddTodosAll= () => {
+    return (dispatch, getState) => {
+        var uid = getState().auth.uid;
+        var usersRef = firebaseRef.child('users');
+
+        return usersRef.once('value').then((snapshot) => {
+
+
+            var dataObj = snapshot.val() || {};
+            var parsedTodos = [];
+
+            console.log("dataObj",dataObj);
+
+           // console.log(Object.keys(dataObj));
+
+
+            Object.keys(dataObj).forEach((userId) => {
+               // console.log("userId", dataObj[userId]);
+                Object.keys(dataObj[userId]["todos"]).forEach((todoId) => {
+                    console.log("todo", dataObj[userId]["todos"][todoId]);
+
+
+                    parsedTodos.push({
+                    id: todoId,
+                    ...dataObj[userId]["todos"][todoId]});
+
+                });
+        });
+
+
+        console.log("parsedTodos", parsedTodos);
+
+        dispatch(addTodos(parsedTodos));
+    });
+};
+};
+
 
 export var updateTodo = (id, updates) => {
   return {
@@ -94,10 +136,21 @@ export var startToggleTodo = (id, completed) => {
 };
 
 export var login = (uid) => {
+
+    console.log("login");
   return {
     type: 'LOGIN',
     uid
   };
+};
+
+export var loginError = (error) => {
+
+    console.log("loginError", error);
+    return {
+        type: 'LOGIN_ERROR',
+        error
+    };
 };
 
 export var startLogin = () => {
@@ -109,6 +162,47 @@ export var startLogin = () => {
     });
   };
 };
+
+export var startResendPassword = (email) => {
+    return (dispatch, getState) => {
+        return firebase.auth().sendPasswordResetEmail(email).then((result) => {
+            console.log("Email sent.", result);
+        }, function(error) {
+            console.log("An error happened", error);
+        });
+    };
+};
+
+export var startCreateUser = (email, password) => {
+
+    console.log("email", email);
+    return (dispatch, getState) => {
+        return firebase.auth().createUserWithEmailAndPassword(email, password
+
+        ).then((result) => {
+            console.log('Auth worked!', result);
+        }, (error) => {
+            console.log('Unable to auth', error);
+        });
+    };
+};
+
+
+
+export var startLoginUser = (email, password) => {
+    return (dispatch, getState) => {
+        return firebase.auth().signInWithEmailAndPassword(email, password
+
+        ).then((result) => {
+                console.log('Auth worked!', result);
+            }, (error) => {
+                console.log('Unable to auth', error);
+                dispatch(loginError(error));
+            });
+    };
+};
+
+
 
 export var logout = () => {
   return {

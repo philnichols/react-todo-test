@@ -10,10 +10,16 @@ import router from 'app/router/';
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
+      console.log("LOGGED IN");
     store.dispatch(actions.login(user.uid));
+
     store.dispatch(actions.startAddTodos());
     hashHistory.push('/todos');
+
   } else {
+
+      store.dispatch(actions.startAddTodosAll());
+      console.log("LOGGED OUT");
     store.dispatch(actions.logout());
     hashHistory.push('/');
   }
